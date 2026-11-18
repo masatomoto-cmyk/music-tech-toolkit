@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "musictk"
+version = "0.1.0"
+description = "Small Python tools that connect music hardware (Roland S-1/P-6), DAWs (Logic, FL Studio) and live visuals (TouchDesigner, OBS, Blender)."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = ["mido>=1.3", "python-rtmidi>=1.5"]
+
+[project.optional-dependencies]
+obs = ["obsws-python>=1.7"]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+s1 = "musictk.hardware.s1:main"
+s1-jam = "musictk.hardware.jam:main"
+s1-bassline = "musictk.hardware.bassline:main"
+s1-phrase = "musictk.hardware.phrase:main"
+midi-spy = "musictk.midi.spy:main"
+midi-replay = "musictk.midi.replay:main"
+house-midi = "musictk.daw.logic_house:main"
+subtitles2txt = "musictk.research.subtitles:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/musictk"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 140
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+# The Blender / TouchDesigner scripts are run inside those apps and read like scripts on purpose.
+per-file-ignores = { "src/musictk/visuals/blender_audio_react.py" = ["E401", "E702", "E701", "E731", "I001", "B007", "E501"], "src/musictk/hardware/s1.py" = ["E501"], "src/musictk/daw/logic_house.py" = ["E501"], "src/musictk/visuals/obs_bind.py" = ["E501"], "touchdesigner/*" = ["F821", "E501"] }
